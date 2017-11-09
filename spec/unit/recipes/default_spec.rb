@@ -1,22 +1,33 @@
 #
-# Cookbook:: apache
+# Cookbook Name:: apache
 # Spec:: default
 #
-# Copyright:: 2017, The Authors, All Rights Reserved.
+# Copyright (c) 2015 The Authors, All Rights Reserved.
 
 require 'spec_helper'
 
 describe 'apache::default' do
-  context 'When all attributes are default, on an Ubuntu 16.04' do
+  context 'When all attributes are default, on an unspecified platform' do
     let(:chef_run) do
-      # for a complete list of available platforms and versions see:
-      # https://github.com/customink/fauxhai/blob/master/PLATFORMS.md
-      runner = ChefSpec::ServerRunner.new(platform: 'ubuntu', version: '16.04')
+      runner = ChefSpec::ServerRunner.new
       runner.converge(described_recipe)
     end
 
-    it 'converges successfully' do
-      expect { chef_run }.to_not raise_error
+
+    it 'installs the correct package' do
+      expect(chef_run).to install_package('apache2')
+    end
+
+    it 'creates an default html file' do
+      expect(chef_run).to create_template('/var/www/html/index.html')
+    end
+
+    it 'starts the service' do
+      expect(chef_run).to start_service('apache2')
+    end
+
+    it 'enables the service' do
+      expect(chef_run).to enable_service('apache2')
     end
   end
 end
